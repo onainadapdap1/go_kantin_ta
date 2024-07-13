@@ -81,33 +81,44 @@ func main() {
 	// DB.Create(&newPengumuman)
 
 	// 1
-	api.POST("/login", userHandler.Login) 
+	api.GET("/test", func (c *gin.Context)  {
+		c.JSON(200, gin.H{
+			"message": "testing",
+		})
+	})
+	api.POST("/login", userHandler.Login)
 	// admin
 	// 2
 	api.POST("/pengumuman", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.CreatePengumuman)
 	// 3
 	api.GET("/pengumuman", middleware.AuthBothMiddleware(authService, userServ), pengumumanHandler.GetAllPengumuman)
+	// new request update
+	api.PUT("/pengumuman/:id", middleware.AuthAdminMiddleware(authService, userServ), pengumumanHandler.UpdatedPengumuman)
 	// 4
 	api.GET("/feedback", middleware.AuthAdminMiddleware(authService, userServ), feedbackHandler.GetAllFeedback)
 	// 5
 	api.POST("/menu-makanans", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.CreateMenuMakanan)
 	// 10
 	api.GET("/menu-makanans", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.GetAllMenuMakanan)
+	// new request delete
+	api.DELETE("/menu-makanans/:id", middleware.AuthAdminMiddleware(authService, userServ), menuMakanHandler.DeleteMenuMakanan)
 	// 11
 	api.GET("/show-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.ShowBarang)
 	// 12
 	api.GET("/hide-barangs/:id", middleware.AuthAdminMiddleware(authService, userServ), barangHandler.HideBarang)
-		
+
 	// user
 	// 6
 	api.POST("/feedback", middleware.AuthUserMiddleware(authService, userServ), feedbackHandler.CreateFeedback)
-	// 7
+	// 7 (INI BELUM DI DOC)
 	api.GET("/my-feedback", middleware.AuthUserMiddleware(authService, userServ), feedbackHandler.GetAllMyFeedback)
 	// 8
 	api.POST("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.CreateBarang)
 	// 9
-	api.GET("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.GetPengumuman) 
+	api.GET("/barangs", middleware.AuthUserMiddleware(authService, userServ), barangHandler.GetPengumuman)
+	// (INI BELUM DI DOC)
 	api.POST("/allergy-reports", middleware.AuthUserMiddleware(authService, userServ), allergyReportHandler.CreateAllergyReport)
+	// (INI BELUM DI DOC)
 	api.GET("/allergy-reports", middleware.AuthUserMiddleware(authService, userServ), allergyReportHandler.GetAllAllergyReportByUserId)
 
 	router.Run(envPortOr("8080"))

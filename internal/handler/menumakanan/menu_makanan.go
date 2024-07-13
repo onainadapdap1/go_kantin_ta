@@ -2,6 +2,7 @@ package menumakanan
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 type MenuMakananHandler interface {
 	CreateMenuMakanan(c *gin.Context) 
 	GetAllMenuMakanan(c *gin.Context)
+	DeleteMenuMakanan(c *gin.Context) 
 }
 
 type menuMakananHandler struct {
@@ -21,6 +23,22 @@ type menuMakananHandler struct {
 
 func NewMenuMakananHandler(serv menumakanan.MenuMakananService) MenuMakananHandler {
 	return &menuMakananHandler{serv: serv}
+}
+
+func (h *menuMakananHandler) DeleteMenuMakanan(c *gin.Context) {
+	menumakananID, _ := strconv.Atoi(c.Param("id"))
+
+	err := h.serv.DeleteMenuMakanan(uint(menumakananID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete menu makanan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "menu makanan successfully deleted",
+	});
+
 }
 
 func (h *menuMakananHandler) CreateMenuMakanan(c *gin.Context)  {

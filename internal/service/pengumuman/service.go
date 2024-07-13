@@ -1,8 +1,10 @@
 package pengumuman
 
 import (
+	"log"
 	"time"
 
+	"github.com/onainadapdap1/golang_kantin/internal/api"
 	"github.com/onainadapdap1/golang_kantin/internal/repository/pengumuman"
 	"github.com/onainadapdap1/golang_kantin/models"
 )
@@ -10,6 +12,8 @@ import (
 type PengumumanService interface {
 	CreatePengumuman(pengumuman models.Pengumuman) (models.Pengumuman, error)
 	GetAllPengumuman() ([]models.Pengumuman, error)
+	UpdatePengumuman(pengumumanID uint, inputData api.UpdatePengumumanInput) (models.Pengumuman, error)
+	// GetPengumumanByID(pengumumanID uint) (models.Pengumuman, error)
 }
 
 type pengumumanService struct {
@@ -29,10 +33,57 @@ func (s *pengumumanService) CreatePengumuman(pengumuman models.Pengumuman) (mode
 }
 
 func (s *pengumumanService) GetAllPengumuman() ([]models.Pengumuman, error) {
+	// var pengumumans []models.Pengumuman
+	// var err error
+	// var wg sync.WaitGroup
+	// wg.Add(1)
+	// go func() {
+	//     defer wg.Done()
+	//     pengumumans, err = s.repo.GetAllPengumuman()
+	// }()
+	// wg.Wait()
+
+	// return pengumumans, err
+
 	pengumumans, err := s.repo.GetAllPengumuman()
 	if err != nil {
 		return nil, err
 	}
 
 	return pengumumans, nil
+}
+
+func (s *pengumumanService) UpdatePengumuman(pengumumanID uint, inputData api.UpdatePengumumanInput) (models.Pengumuman, error) {
+	log.Println("error 1 service")
+	pengumuman, err := s.repo.GetPengumumanByID(pengumumanID) // 183
+	if err != nil {
+		return pengumuman, err
+	}
+
+	parsedTime, _ := time.Parse("2006-01-02", inputData.TanggalBerakhir)
+
+	// layout := "2006-01-02 15:04:05"
+	// timeToString := pengumuman.TanggalBerakhir.String()
+
+	// if inputData.TanggalBerakhir == "" {
+	// 	inputData.TanggalBerakhir = timeToString
+	// }
+	// if inputData.Deskripsi == "" {
+	// 	inputData.Deskripsi = pengumuman.Deskripsi
+	// }
+
+	// updatePengumuman := models.Pengumuman {
+	// 	TanggalBerakhir: parsedTime,
+	// 	Deskripsi: inputData.Deskripsi,
+	// }
+	pengumuman.TanggalBerakhir = parsedTime
+	pengumuman.Deskripsi = inputData.Deskripsi
+	log.Println("error 2 service")
+	updatedPengumuman, err := s.repo.UpdatePengumuman(pengumuman)
+	if err != nil {
+		return updatedPengumuman, nil
+	}
+	log.Println("error 3 service")
+
+	return updatedPengumuman, nil
 }

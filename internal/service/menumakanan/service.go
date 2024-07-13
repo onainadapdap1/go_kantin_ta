@@ -8,21 +8,31 @@ import (
 type MenuMakananService interface {
 	CreateMenuMakanan(menu models.MenuMakanan) error
 	GetAllMenuMakanan() ([]models.MenuMakanan, error)
+	DeleteMenuMakanan(id uint) error 
 }
 
-type menuMakananRepository struct {
+type menuMakananService struct {
 	repo menumakanan.MenuMakananRepository
 }
 
 func NewMenuMakananServ(repo menumakanan.MenuMakananRepository) MenuMakananService {
-	return &menuMakananRepository{repo: repo}
+	return &menuMakananService{repo: repo}
 }
 
-func (s *menuMakananRepository) CreateMenuMakanan(menu models.MenuMakanan) error {
+func (s *menuMakananService) DeleteMenuMakanan(id uint) error {
+	err := s.repo.DeleteMenuMakanan(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+} 
+
+func (s *menuMakananService) CreateMenuMakanan(menu models.MenuMakanan) error {
 	return s.repo.CreateMenuMakanan(menu)
 }
 
-func (s *menuMakananRepository) GetAllMenuMakanan() ([]models.MenuMakanan, error) {
+func (s *menuMakananService) GetAllMenuMakanan() ([]models.MenuMakanan, error) {
 	menusMakanans, err := s.repo.GetAllMenuMakanan()
 	if err != nil {
 		return nil, err

@@ -1,7 +1,9 @@
 package pengumuman
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +15,7 @@ import (
 type PengumumanHandler interface {
 	CreatePengumuman(c *gin.Context)
 	GetAllPengumuman(c *gin.Context)
+	UpdatedPengumuman(c *gin.Context)
 }
 
 type pengumumanHandler struct {
@@ -66,11 +69,43 @@ func (h *pengumumanHandler) CreatePengumuman(c *gin.Context) {
 }
 
 func (h *pengumumanHandler) GetAllPengumuman(c *gin.Context) {
+	// start := time.Now()
+
 	pengumumans, err := h.service.GetAllPengumuman()
+	// elapsed := time.Since(start)
+	// log.Printf("GetAllPengumuman took %s", elapsed)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "no data is found"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": pengumumans})
+}
+
+func (h *pengumumanHandler) UpdatedPengumuman(c *gin.Context) {
+	pengumumanID, _ := strconv.Atoi(c.Param("id")) // 183
+	log.Println("error 1 handler")
+	var inputPengumuman api.UpdatePengumumanInput
+	if err := c.ShouldBindJSON(&inputPengumuman); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+	log.Println("error 2 handler")
+	updatedPengumuman, err := h.service.UpdatePengumuman(uint(pengumumanID), inputPengumuman)
+	if err != nil {
+		response := gin.H{
+			"success": false,
+			"message": "failed to update pengumuman",
+			"error":   err.Error(),
+		}
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	log.Println("error 3 handler")
+	successResp := gin.H{
+		"success": true,
+		"message": "successfully updated new announcement",
+		"data":    updatedPengumuman,
+	}
+	c.JSON(http.StatusOK, successResp)
 }
