@@ -34,8 +34,8 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Pull docker image
-        run: docker pull pegasus09/go_kantin_ta:latest
+        run: sudo docker pull pegasus09/go_kantin_ta:latest
       - name: Delete old container
-        run: docker rm -f go-app-kantin-container
+        run: sudo docker rm -f go-app-kantin-container
       - name: Run docker container
-        run: docker run -d -p 4040:4040 --name go-app-kantin-container pegasus09/go_kantin_ta
+        run: sudo docker run -d -p 4040:4040 --name go-app-kantin-container pegasus09/go_kantin_ta
