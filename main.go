@@ -81,9 +81,14 @@ func main() {
 	// DB.Create(&newPengumuman)
 
 	// 1
-	api.GET("/test", func (c *gin.Context)  {
+	api.GET("/test", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "testing",
+		})
+	})
+	api.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Hi Sarah",
 		})
 	})
 	api.POST("/login", userHandler.Login)
